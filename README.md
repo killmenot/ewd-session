@@ -73,8 +73,8 @@ argument, eg:
 
 It is important to enable Session Garbage collection, otherwise your Document Store will accumulate expired session data.
 
-If you are using ewd-qoper8, you should start an instance of the Session Garbage collector timer in your worker module
- - do this within the worker's on('DocumentStoreStarted') handler:
+If you are using ewd-qoper8, you should start an instance of the Session Garbage collector timer in your worker module.
+Do this within the worker's on('DocumentStoreStarted') handler:
 
     this.on('DocumentStoreStarted', function() {
       sessions.garbageCollector(this);
