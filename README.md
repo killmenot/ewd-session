@@ -13,11 +13,11 @@ Google Group for discussions, support, advice etc: [http://groups.google.co.uk/g
 This module may be used to provide session management.  Sessions make use of the persistent JavaScript objects and 
 fine-grained document database provided by ewd-document-store.  For more information on ewd-document-store:
 
-         [https://github.com/robtweed/ewd-document-store](https://github.com/robtweed/ewd-document-store)
+[https://github.com/robtweed/ewd-document-store](https://github.com/robtweed/ewd-document-store)
 
 You'll usually use ewd-session within an ewd-qoper8 worker process.  For more informaation on ewd-qoper8:
 
-         [https://github.com/robtweed/ewd-qoper8](https://github.com/robtweed/ewd-qoper8)
+[https://github.com/robtweed/ewd-qoper8](https://github.com/robtweed/ewd-qoper8)
 
 
 ## Installing
