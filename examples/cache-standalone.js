@@ -73,6 +73,7 @@ console.log('token: ' + session.token);
 var results = sessions.authenticate(session.token, 'noCheck');
 console.log('results: ' + JSON.stringify(results));
 console.log('token for session : ' + results.session.id + ': ' + results.session.token);
+console.log('application : ' + results.session.application);
 console.log('session data: ' + JSON.stringify(results.session.data.getDocument()));
 
 

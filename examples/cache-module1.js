@@ -89,7 +89,7 @@ module.exports = function() {
       session.authenticated = true;
       finished({
         ok: true,
-        appName: session.data.$('ewd_appName').value
+        application: session.application
       });
     }
     
