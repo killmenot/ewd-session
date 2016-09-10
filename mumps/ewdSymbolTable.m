@@ -38,14 +38,7 @@ saveSymbolTable(%zzg) ;
  ; %zzg must specify at least one subscript
  ;
  k @%zzg
- i $zv["GT.M" d  QUIT 1
- . n %zzx,%zzz
- . s %zzg=$e(%zzg,1,$l(%zzg)-1)
- . s %zzz="%"
- . f  s %zzz=$o(@%zzz) q:%zzz=""  d  h 0
- . . i %zzz="%zzz"!(%zzz="%zzx")!(%zzz="%zzg") q
- . . s %zzx="m "_%zzg_",%zzz)=@%zzz"
- . . x %zzx
+ i $zv["GT.M" zshow "v":@%zzg QUIT 1
  ;
  QUIT $zu(160,1,%zzg)
  ;
@@ -56,14 +49,8 @@ restoreSymbolTable(gloRef) ;
  ; gloRef must specify at least one subscript
  ;
  k (gloRef)
- i $zv["GT.M" d  QUIT 1
- . n %zzx,%zzz
- . s gloRef=$e(gloRef,1,$l(gloRef)-1)
- . s %zzz=""
- . f  d  h 0 q:%zzz=""
- . . s %zzx="s %zzz=$o("_gloRef_",%zzz))"
- . . x %zzx
- . . i %zzz'="" m @%zzz=^(%zzz)
+ i $zv["GT.M" d  quit 1
+ . n i f i=0:0 s i=$o(@gloRef@("V",i)) q:'i  s @^(i)
  ;
  QUIT $zu(160,0,gloRef)
  ;
