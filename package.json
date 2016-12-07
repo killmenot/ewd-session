@@ -1,6 +1,6 @@
 {
   "name": "ewd-session",
-  "version": "2.8.0",
+  "version": "2.10.0",
   "description": "Session management using ewd-document-store DocumentNodes",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
   "author": "Rob Tweed, M/Gateway Developments Ltd",
   "license": "Apache-2.0",
   "dependencies": {
-    "node-uuid": ""
+    "uuid": ""
   },
   "bugs": {
     "url": "https://github.com/robtweed/ewd-session/issues"
