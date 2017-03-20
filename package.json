@@ -1,6 +1,6 @@
 {
   "name": "ewd-session",
-  "version": "2.11.0",
+  "version": "2.12.0",
   "description": "Session management using ewd-document-store DocumentNodes",
   "main": "index.js",
   "scripts": {
