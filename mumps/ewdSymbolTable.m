@@ -1,9 +1,11 @@
-ewdSymbolTable ; ewd-globals-session functions for symbol table management
+ewdSymbolTable ; ewd-globals-session functions for symbol table management;2017-07-06  11:09 AM
  ;
  ; ----------------------------------------------------------------------------
  ; | ewd-session: Session management using ewd-document-store                 |
  ; |                                                                          |
  ; | Copyright (c) 2016 M/Gateway Developments Ltd,                           |
+ ; | Copyright (c) 2017 Sam Habiel, Pharm.D. (added set, kill, get,           |
+ ; |               reimplemented GT.M symbol table code)                      |
  ; | Reigate, Surrey UK.                                                      |
  ; | All rights reserved.                                                     |
  ; |                                                                          |
@@ -63,3 +65,35 @@ getSessionSymbolTable(sessid) ;
  k %zzg
  QUIT "ok"
  ;
+setVar(var,val) ;
+ set @var=val
+ quit @var
+ ;
+ ;
+killVar(var) ;
+ kill @var
+ quit 1
+ ;
+getVar(var) ;
+ quit $$GETV(var)
+ ;
+ ; Public domain code from VistA for getting a variable
+ ; from XWBPRS. This lets us get ISVs as well as well as vars with quotes
+GETV(V) ;get value of V - reference parameter
+ N X
+ S X=V
+ IF $E(X,1,2)="$$" Q ""
+ IF $C(34,36)[$E(V) X "S V="_$$VCHK(V)
+ E  S V=@V
+ Q V
+ ;
+VCHK(S) ;Parse string for first argument
+ N C,I,P
+ F I=1:1 S C=$E(S,I) D VCHKP:C="(",VCHKQ:C=$C(34) Q:" ,"[C
+ Q $E(S,1,I-1)
+VCHKP S P=1 ;Find closing paren
+ F I=I+1:1 S C=$E(S,I) Q:P=0!(C="")  I "()"""[C D VCHKQ:C=$C(34) S P=P+$S("("[C:1,")"[C:-1,1:0)
+ Q
+VCHKQ ;Find closing quote
+ F I=I+1:1 S C=$E(S,I) Q:C=""!(C=$C(34))
+ Q
