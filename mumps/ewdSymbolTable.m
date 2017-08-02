@@ -1,9 +1,9 @@
-ewdSymbolTable ; ewd-globals-session functions for symbol table management;2017-07-06  11:09 AM
+ewdSymbolTable ; ewd-globals-session functions for symbol table management
  ;
  ; ----------------------------------------------------------------------------
  ; | ewd-session: Session management using ewd-document-store                 |
  ; |                                                                          |
- ; | Copyright (c) 2016 M/Gateway Developments Ltd,                           |
+ ; | Copyright (c) 2016-17 M/Gateway Developments Ltd,                        |
  ; | Copyright (c) 2017 Sam Habiel, Pharm.D. (added set, kill, get,           |
  ; |               reimplemented GT.M symbol table code)                      |
  ; | Reigate, Surrey UK.                                                      |
@@ -26,7 +26,7 @@ ewdSymbolTable ; ewd-globals-session functions for symbol table management;2017-
  ; |  limitations under the License.                                          |
  ; ----------------------------------------------------------------------------
  ;
- ; Build 1: 3 March 2016
+ ; 2 August 2017
  ;
  ;QUIT
  ;
@@ -51,8 +51,10 @@ restoreSymbolTable(gloRef) ;
  ; gloRef must specify at least one subscript
  ;
  k (gloRef)
- i $zv["GT.M" d  quit 1
- . n i f i=0:0 s i=$o(@gloRef@("V",i)) q:'i  s @^(i)
+ i $zv["GT.M" d  QUIT 1
+ . n %zzv
+ . s %zzv=""
+ . f  s %zzv=$o(@gloRef@("V",%zzv)) q:%zzv=""  s @^(%zzv)
  ;
  QUIT $zu(160,0,gloRef)
  ;
@@ -66,34 +68,37 @@ getSessionSymbolTable(sessid) ;
  QUIT "ok"
  ;
 setVar(var,val) ;
- set @var=val
- quit @var
+ s @var=val
+ QUIT @var
  ;
  ;
 killVar(var) ;
- kill @var
- quit 1
+ k @var
+ QUIT 1
  ;
 getVar(var) ;
- quit $$GETV(var)
+ QUIT $$GETV(var)
  ;
  ; Public domain code from VistA for getting a variable
  ; from XWBPRS. This lets us get ISVs as well as well as vars with quotes
+ ;
 GETV(V) ;get value of V - reference parameter
  N X
  S X=V
- IF $E(X,1,2)="$$" Q ""
+ IF $E(X,1,2)="$$" QUIT ""
  IF $C(34,36)[$E(V) X "S V="_$$VCHK(V)
  E  S V=@V
- Q V
+ QUIT V
  ;
 VCHK(S) ;Parse string for first argument
  N C,I,P
  F I=1:1 S C=$E(S,I) D VCHKP:C="(",VCHKQ:C=$C(34) Q:" ,"[C
- Q $E(S,1,I-1)
+ QUIT $E(S,1,I-1)
+ ;
 VCHKP S P=1 ;Find closing paren
  F I=I+1:1 S C=$E(S,I) Q:P=0!(C="")  I "()"""[C D VCHKQ:C=$C(34) S P=P+$S("("[C:1,")"[C:-1,1:0)
- Q
+ QUIT
+ ;
 VCHKQ ;Find closing quote
  F I=I+1:1 S C=$E(S,I) Q:C=""!(C=$C(34))
- Q
+ QUIT
