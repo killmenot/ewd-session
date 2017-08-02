@@ -1,9 +1,11 @@
-ewdSymbolTable ; ewd-globals-session functions for symbol table management
+ewdSymbolTable ; ewd-globals-session functions for symbol table management;2017-07-06  11:09 AM
  ;
  ; ----------------------------------------------------------------------------
  ; | ewd-session: Session management using ewd-document-store                 |
  ; |                                                                          |
  ; | Copyright (c) 2016 M/Gateway Developments Ltd,                           |
+ ; | Copyright (c) 2017 Sam Habiel, Pharm.D. (added set, kill, get,           |
+ ; |               reimplemented GT.M symbol table code)                      |
  ; | Reigate, Surrey UK.                                                      |
  ; | All rights reserved.                                                     |
  ; |                                                                          |
@@ -38,14 +40,7 @@ saveSymbolTable(%zzg) ;
  ; %zzg must specify at least one subscript
  ;
  k @%zzg
- i $zv["GT.M" d  QUIT 1
- . n %zzx,%zzz
- . s %zzg=$e(%zzg,1,$l(%zzg)-1)
- . s %zzz="%"
- . f  s %zzz=$o(@%zzz) q:%zzz=""  d  h 0
- . . i %zzz="%zzz"!(%zzz="%zzx")!(%zzz="%zzg") q
- . . s %zzx="m "_%zzg_",%zzz)=@%zzz"
- . . x %zzx
+ i $zv["GT.M" zshow "v":@%zzg QUIT 1
  ;
  QUIT $zu(160,1,%zzg)
  ;
@@ -56,14 +51,8 @@ restoreSymbolTable(gloRef) ;
  ; gloRef must specify at least one subscript
  ;
  k (gloRef)
- i $zv["GT.M" d  QUIT 1
- . n %zzx,%zzz
- . s gloRef=$e(gloRef,1,$l(gloRef)-1)
- . s %zzz=""
- . f  d  h 0 q:%zzz=""
- . . s %zzx="s %zzz=$o("_gloRef_",%zzz))"
- . . x %zzx
- . . i %zzz'="" m @%zzz=^(%zzz)
+ i $zv["GT.M" d  quit 1
+ . n i f i=0:0 s i=$o(@gloRef@("V",i)) q:'i  s @^(i)
  ;
  QUIT $zu(160,0,gloRef)
  ;
@@ -76,3 +65,35 @@ getSessionSymbolTable(sessid) ;
  k %zzg
  QUIT "ok"
  ;
+setVar(var,val) ;
+ set @var=val
+ quit @var
+ ;
+ ;
+killVar(var) ;
+ kill @var
+ quit 1
+ ;
+getVar(var) ;
+ quit $$GETV(var)
+ ;
+ ; Public domain code from VistA for getting a variable
+ ; from XWBPRS. This lets us get ISVs as well as well as vars with quotes
+GETV(V) ;get value of V - reference parameter
+ N X
+ S X=V
+ IF $E(X,1,2)="$$" Q ""
+ IF $C(34,36)[$E(V) X "S V="_$$VCHK(V)
+ E  S V=@V
+ Q V
+ ;
+VCHK(S) ;Parse string for first argument
+ N C,I,P
+ F I=1:1 S C=$E(S,I) D VCHKP:C="(",VCHKQ:C=$C(34) Q:" ,"[C
+ Q $E(S,1,I-1)
+VCHKP S P=1 ;Find closing paren
+ F I=I+1:1 S C=$E(S,I) Q:P=0!(C="")  I "()"""[C D VCHKQ:C=$C(34) S P=P+$S("("[C:1,")"[C:-1,1:0)
+ Q
+VCHKQ ;Find closing quote
+ F I=I+1:1 S C=$E(S,I) Q:C=""!(C=$C(34))
+ Q
