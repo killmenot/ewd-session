@@ -49,9 +49,10 @@ module.exports = function() {
   });
 
   this.on('message', function(messageObj, send, finished) {
+    var session;
 
     if (messageObj.type === 'initiate') {
-      var session = sessions.create('testApp');
+      session = sessions.create('testApp');
       finished({
         token: session.token
       });
@@ -60,7 +61,7 @@ module.exports = function() {
     if (messageObj.type === 'login') {
 
       // user hasn't yet logged in, so set 2nd argument (loggingIn) to true
- 
+
       var results = sessions.authenticate(messageObj.token, true);
       if (results.error) {
         finished(results);
@@ -85,19 +86,19 @@ module.exports = function() {
         finished({error: 'Invalid password'});
         return;
       }
-      var session = results.session;
+      session = results.session;
       session.authenticated = true;
       finished({
         ok: true,
         application: session.application
       });
     }
-    
+
     finished({error: 'invalid request: ' + messageObj.type});
   });
 
   this.on('stop', function() {
     console.log('Connection to GT.M closed');
   });
-  
+
 };

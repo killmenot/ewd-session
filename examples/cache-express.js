@@ -52,7 +52,9 @@ app.post('/qoper8/login', function (req, res) {
   q.handleMessage(message, function(response) {
     if (response.message.error) {
       var status = 400;
-      if (response.message.status && response.message.status.code) status = response.message.status.code;
+      if (response.message.status && response.message.status.code) {
+        status = response.message.status.code;
+      }
       res.status(status).send({error: response.message.error});
     }
     else {

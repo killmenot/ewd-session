@@ -1,23 +1,50 @@
 {
   "name": "ewd-session",
   "version": "2.18.1",
+  "author": "Rob Tweed, M/Gateway Developments Ltd",
   "description": "Session management using ewd-document-store DocumentNodes",
+  "license": "Apache-2.0",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "homepage": "https://github.com/robtweed/ewd-session#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/robtweed/ewd-session.git"
   },
-  "author": "Rob Tweed, M/Gateway Developments Ltd",
-  "license": "Apache-2.0",
-  "dependencies": {
-    "uuid": "",
-    "jwt-simple": ""
-  },
   "bugs": {
     "url": "https://github.com/robtweed/ewd-session/issues"
   },
-  "homepage": "https://github.com/robtweed/ewd-session#readme"
+  "scripts": {
+    "lint": "jshint examples spec",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "jasmine --config=spec/support/unit.json",
+    "test:integration": "jasmine --config=spec/support/integration.json",
+    "coverage:unit": "nyc --reporter=html --reporter=text jasmine --config=spec/support/unit.json",
+    "coverage:integration": "nyc --reporter=html --reporter=text jasmine --config=spec/support/integration.json",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls"
+  },
+  "pre-commit": [
+    "lint",
+    "test:unit"
+  ],
+  "nyc": {
+    "all": true,
+    "include": [
+      "lib/**/*.js"
+    ],
+    "exclude": [
+      "spec/**/*.js"
+    ]
+  },
+  "dependencies": {
+    "uuid": "^3.1.0",
+    "jwt-simple": "^0.5.1"
+  },
+  "devDependencies": {
+    "coveralls": "^2.13.1",
+    "jasmine": "^2.8.0",
+    "jasmine-spec-reporter": "^4.1.1",
+    "jshint": "^2.9.5",
+    "nyc": "^11.1.0",
+    "pre-commit": "^1.2.2"
+  }
 }
