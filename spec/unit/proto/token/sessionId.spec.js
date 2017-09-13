@@ -3,7 +3,7 @@
 var sessionId = require('../../../../lib/proto/token/sessionId');
 var documentNodeMock = require('../../mocks/documentNode');
 
-describe(' - unit/proto/token/sessionId:', function () {
+describe('unit/proto/token/sessionId:', function () {
   var Token;
   var token;
 

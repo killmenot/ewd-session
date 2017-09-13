@@ -3,7 +3,7 @@
 var exists = require('../../../../lib/proto/token/exists');
 var documentNodeMock = require('../../mocks/documentNode');
 
-describe(' - unit/proto/token/exists:', function () {
+describe('unit/proto/token/exists:', function () {
   var Token;
   var token;
 

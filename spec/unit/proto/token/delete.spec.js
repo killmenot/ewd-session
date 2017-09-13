@@ -3,7 +3,7 @@
 var deleteMethod = require('../../../../lib/proto/token/delete');
 var documentNodeMock = require('../../mocks/documentNode');
 
-describe(' - unit/proto/token/delete:', function () {
+describe('unit/proto/token/delete:', function () {
   var Token;
   var token;
 
