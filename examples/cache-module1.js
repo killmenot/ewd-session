@@ -28,14 +28,13 @@
 
 var sessions = require('ewd-session');
 
-module.exports = function() {
+module.exports = function () {
 
-  this.on('dbOpened', function(status) {
+  this.on('dbOpened', function (status) {
     console.log('Cache was opened by worker ' + process.pid + ': status = ' + JSON.stringify(status));
   });
 
-  this.on('start', function(isFirst) {
-
+  this.on('start', function (isFirst) {
     var connectCacheTo = require('ewd-qoper8-cache');
     connectCacheTo(this);
     sessions.init(this.documentStore);
@@ -48,7 +47,7 @@ module.exports = function() {
     }
   });
 
-  this.on('message', function(messageObj, send, finished) {
+  this.on('message', function (messageObj, send, finished) {
     var session;
 
     if (messageObj.type === 'initiate') {
@@ -59,7 +58,6 @@ module.exports = function() {
     }
 
     if (messageObj.type === 'login') {
-
       // user hasn't yet logged in, so set 2nd argument (loggingIn) to true
 
       var results = sessions.authenticate(messageObj.token, true);
@@ -67,25 +65,39 @@ module.exports = function() {
         finished(results);
         return;
       }
+
       var passwords = new this.documentStore.DocumentNode('ewdPasswords');
       var username = messageObj.credentials.username;
       var password = messageObj.credentials.password;
+
       if (!username || username === '') {
-        finished({error: 'Missing username'});
+        finished({
+          error: 'Missing username'
+        });
         return;
       }
+
       if (!password || password === '') {
-        finished({error: 'Missing password'});
+        finished({
+          error: 'Missing password'
+        });
         return;
       }
+
       if (!passwords.$(username).exists) {
-        finished({error: 'Invalid username'});
+        finished({
+          error: 'Invalid username'
+        });
         return;
       }
+
       if (passwords.$(username).value !== password) {
-        finished({error: 'Invalid password'});
+        finished({
+          error: 'Invalid password'
+        });
         return;
       }
+
       session = results.session;
       session.authenticated = true;
       finished({
@@ -94,10 +106,12 @@ module.exports = function() {
       });
     }
 
-    finished({error: 'invalid request: ' + messageObj.type});
+    finished({
+      error: 'invalid request: ' + messageObj.type
+    });
   });
 
-  this.on('stop', function() {
+  this.on('stop', function () {
     console.log('Connection to GT.M closed');
   });
 
