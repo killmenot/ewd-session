@@ -1,5 +1,7 @@
 # ewd-session: Session Management based on ewd-document-store DocumentNodes
- 
+
+[![Build Status](https://travis-ci.org/killmenot/ewd-session.svg?branch=master)](https://travis-ci.org/killmenot/ewd-session) [![Coverage Status](https://coveralls.io/repos/github/killmenot/ewd-session/badge.svg?branch=tests)](https://coveralls.io/github/killmenot/ewd-session?branch=tests)
+
 Rob Tweed <rtweed@mgateway.com>  
 24 February 2016, M/Gateway Developments Ltd [http://www.mgateway.com](http://www.mgateway.com)  
 
