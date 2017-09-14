@@ -74,4 +74,32 @@ describe('unit/proto/session/updateJWT:', function () {
     expect(session.jwt).toBe(expected);
     expect(actual).toBe(expected);
   });
+
+  it('should update jwt token without newPayload', function () {
+    var expected = 'updatedJwtToken';
+
+    jwt.decode.and.returnValue({
+      foo: 'oldValue',
+      baz: 'bazValue',
+      exp: nowTime / 1000 + 3 * 60 * 60, // 1483239600, 3 hours ahead
+      iat: nowTime / 1000 - 1 * 60 * 60, // 1483225200, 1 hour behind
+      iss: 'qewd:appValue',
+      jti: 'tokenValue.1483225200'
+    });
+
+    jwt.encode.and.returnValue('updatedJwtToken');
+
+    var actual = session.updateJWT();
+
+    expect(jwt.encode).toHaveBeenCalledWith({
+      foo: 'oldValue',
+      baz: 'bazValue',
+      exp: 1483250400,
+      iat: 1483228800,
+      iss: 'qewd:appValue',
+      jti: 'tokenValue.1483228800'
+    }, 'jwtSecretValue');
+    expect(session.jwt).toBe(expected);
+    expect(actual).toBe(expected);
+  });
 });
