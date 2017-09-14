@@ -19,7 +19,7 @@ describe('unit/proto/token/exists:', function () {
     token.data = documentNodeMock.mock();
   });
 
-  it('should return document node existence value', function () {
+  it('should return existence value', function () {
     token.data.exists = true;
     expect(token.exists).toBeTruthy();
   });

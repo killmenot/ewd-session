@@ -36,8 +36,10 @@
     ]
   },
   "dependencies": {
-    "uuid": "^3.1.0",
-    "jwt-simple": "^0.5.1"
+    "jwt-simple": "^0.5.1",
+    "rewire": "^2.5.2",
+    "save-dev": "^2.0.0",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "coveralls": "^2.13.1",

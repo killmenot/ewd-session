@@ -19,12 +19,12 @@ describe('unit/proto/token/sessionId:', function () {
     token.data = documentNodeMock.mock();
   });
 
-  it('should return document node value', function () {
+  it('should return sessionId value', function () {
     token.data.value = 'foo';
     expect(token.sessionId).toBe('foo');
   });
 
-  it('should set document node value', function () {
+  it('should set sessionId value', function () {
     token.sessionId = 'bar';
     expect(token.data.value).toBe('bar');
   });

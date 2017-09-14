@@ -5,7 +5,9 @@ module.exports = {
     var documentNode = {
       $: jasmine.createSpy(),
       delete: jasmine.createSpy(),
-      getDocument: jasmine.createSpy()
+      getDocument: jasmine.createSpy(),
+      setDocument: jasmine.createSpy(),
+      increment: jasmine.createSpy()
     };
 
     return documentNode;
