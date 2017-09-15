@@ -7,7 +7,8 @@ module.exports = {
       delete: jasmine.createSpy(),
       getDocument: jasmine.createSpy(),
       setDocument: jasmine.createSpy(),
-      increment: jasmine.createSpy()
+      increment: jasmine.createSpy(),
+      forEachChild: jasmine.createSpy()
     };
 
     return documentNode;
