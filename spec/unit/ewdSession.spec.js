@@ -1,8 +1,11 @@
 'use strict';
 
+var events = require('events');
 var rewire = require('rewire');
 var regexp = require('uuid-regexp/regexp');
-var ewdSession = rewire('../../lib/ewdSession');
+var ewdSession = rewire('../../lib/ewdSession', {
+  ignore: ['setInterval']
+});
 var documentStoreMock = require('./mocks/documentStore');
 var documentNodeMock = require('./mocks/documentNode');
 var requestMock = require('./mocks/request');
@@ -13,6 +16,7 @@ describe('unit/ewdSession:', function () {
   var Session;
   var TokenFactory;
   var Token;
+  var Worker;
   var sessionSpy;
   var tokenSpy;
   var uuid;
@@ -31,6 +35,14 @@ describe('unit/ewdSession:', function () {
     TokenFactory = function () {
       return Token.apply(this, arguments);
     };
+
+    Worker = function (documentStore) {
+      this.documentStore = documentStore;
+      events.EventEmitter.call(this);
+    };
+
+    Worker.prototype = Object.create(events.EventEmitter.prototype);
+    Worker.prototype.constructor = Worker;
   });
 
   beforeEach(function () {
@@ -260,11 +272,70 @@ describe('unit/ewdSession:', function () {
     });
   });
 
-  // describe('#garbageCollector', function () {
-  //   it('should be function', function () {
-  //     expect(ewdSession.garbageCollector).toEqual(jasmine.any(Function));
-  //   });
-  // });
+  describe('#garbageCollector', function () {
+    var node;
+    var worker;
+
+    beforeEach(function () {
+      Session = function (documentStore, id) {
+        return {
+          id: id,
+          expired: id === '12345'
+        };
+      };
+
+      node = documentNodeMock.mock();
+      node.forEachChild.and.callFake(function (cb) {
+        cb('12345');
+        cb('98765');
+      });
+
+      spyOn(documentStore, 'DocumentNode').and.returnValue(node);
+
+      worker = new Worker(documentStore);
+    });
+
+    it('should be function', function () {
+      expect(ewdSession.garbageCollector).toEqual(jasmine.any(Function));
+    });
+
+    it('should clear expired session', function () {
+      ewdSession.garbageCollector(worker);
+
+      jasmine.clock().tick(6 * 60 * 1000);
+      worker.emit('stop');
+
+      expect(documentStore.DocumentNode).toHaveBeenCalledWith('%zewdSession', ['session']);
+      expect(sessionSpy).toHaveBeenCalledTimes(2);
+      expect(sessionSpy.calls.argsFor(0)).toEqual([documentStore, '12345', false, '%zewdSession']);
+      expect(sessionSpy.calls.argsFor(1)).toEqual([documentStore, '98765', false, '%zewdSession']);
+    });
+
+    it('should clear using custom document name', function () {
+      ewdSession.init(documentStore, 'foobar');
+
+      ewdSession.garbageCollector(worker);
+
+      jasmine.clock().tick(6 * 60 * 1000);
+      worker.emit('stop');
+
+      expect(documentStore.DocumentNode).toHaveBeenCalledWith('foobar', ['session']);
+      expect(sessionSpy).toHaveBeenCalledTimes(2);
+      expect(sessionSpy.calls.argsFor(0)).toEqual([documentStore, '12345', false, 'foobar']);
+      expect(sessionSpy.calls.argsFor(1)).toEqual([documentStore, '98765', false, 'foobar']);
+    });
+
+    it('should clear using custom delay', function () {
+      ewdSession.init(documentStore, 'foobar');
+
+      ewdSession.garbageCollector(worker, 2 * 60);
+
+      jasmine.clock().tick(3 * 60 * 1000);
+      worker.emit('stop');
+
+      expect(sessionSpy).toHaveBeenCalledTimes(2);
+    });
+  });
 
   describe('#authenticate', function () {
     beforeEach(function () {

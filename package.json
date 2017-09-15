@@ -37,8 +37,6 @@
   },
   "dependencies": {
     "jwt-simple": "^0.5.1",
-    "rewire": "^2.5.2",
-    "save-dev": "^2.0.0",
     "uuid": "^3.1.0"
   },
   "devDependencies": {
@@ -48,6 +46,7 @@
     "jshint": "^2.9.5",
     "nyc": "^11.1.0",
     "pre-commit": "^1.2.2",
+    "rewire": "killmenot/rewire#fix-101",
     "uuid-regexp": "^0.3.0"
   }
 }
