@@ -643,7 +643,18 @@ describe('unit/ewdSession:', function () {
     });
   });
 
-  xdescribe('#httpAuthenticate', function () {
+  describe('#httpAuthenticate', function () {
+    var tokenAuthenticateSpy;
+
+    beforeEach(function () {
+      tokenAuthenticateSpy = jasmine.createSpy();
+      tokenAuthenticateSpy.revert = ewdSession.__set__('tokenAuthenticate', tokenAuthenticateSpy);
+    });
+
+    afterEach(function () {
+      revert(tokenAuthenticateSpy);
+    });
+
     it('should be function', function () {
       expect(ewdSession.httpAuthenticate).toEqual(jasmine.any(Function));
     });
@@ -662,6 +673,126 @@ describe('unit/ewdSession:', function () {
       var actual = ewdSession.httpAuthenticate(httpHeaders);
 
       expect(actual).toEqual(expected);
+    });
+
+    describe('via authorization header', function () {
+      it('should return missing or empty QEWD session token error', function () {
+        var expected = {
+          error: 'Missing or Empty QEWD Session Token',
+          status: {
+            code: 403,
+            text: 'Forbidden'
+          }
+        };
+
+        var httpHeaders = {
+          authorization: 'QEWD token='
+        };
+
+        var actual = ewdSession.httpAuthenticate(httpHeaders);
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return missing or empty QEWD session token error with custom credentials', function () {
+        var expected = {
+          error: 'Missing or Empty QEWD Session Token',
+          status: {
+            code: 403,
+            text: 'Forbidden'
+          }
+        };
+
+        var httpHeaders = {
+          authorization: 'foo='
+        };
+        var credentials = {
+          authorization: 'foo'
+        };
+
+        var actual = ewdSession.httpAuthenticate(httpHeaders, credentials);
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return tokenAuthenticate result', function () {
+        var sessionInstance = {};
+
+        tokenAuthenticateSpy.and.returnValue({
+          session: sessionInstance
+        });
+
+        var httpHeaders = {
+          authorization: 'QEWD token=tokenValue'
+        };
+
+        var actual = ewdSession.httpAuthenticate(httpHeaders);
+
+        expect(tokenAuthenticateSpy).toHaveBeenCalledWith('tokenValue', 'noCheck');
+        expect(actual).toEqual({
+          session: sessionInstance
+        });
+      });
+    });
+
+    describe('via cookie', function () {
+      it('should return missing or empty QEWD session token error', function () {
+        var expected = {
+          error: 'Missing or Empty QEWD Session Token',
+          status: {
+            code: 403,
+            text: 'Forbidden'
+          }
+        };
+
+        var httpHeaders = {
+          cookie: 'QEWDTOKEN='
+        };
+
+        var actual = ewdSession.httpAuthenticate(httpHeaders);
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return missing or empty QEWD session token error with custom credentials', function () {
+        var expected = {
+          error: 'Missing or Empty QEWD Session Token',
+          status: {
+            code: 403,
+            text: 'Forbidden'
+          }
+        };
+
+        var httpHeaders = {
+          cookie: 'bar='
+        };
+        var credentials = {
+          cookie: 'bar'
+        };
+
+        var actual = ewdSession.httpAuthenticate(httpHeaders, credentials);
+
+        expect(actual).toEqual(expected);
+      });
+
+      it('should return tokenAuthenticate result', function () {
+        var sessionInstance = {};
+
+        tokenAuthenticateSpy.and.returnValue({
+          session: sessionInstance
+        });
+
+        var httpHeaders = {
+          cookie: 'QEWDTOKEN=tokenValue;foo=bar;'
+        };
+
+        var actual = ewdSession.httpAuthenticate(httpHeaders);
+
+        expect(tokenAuthenticateSpy).toHaveBeenCalledWith('tokenValue', 'noCheck');
+        expect(actual).toEqual({
+          session: sessionInstance
+        });
+      });
     });
   });
 
