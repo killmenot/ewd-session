@@ -41,6 +41,8 @@
   },
   "devDependencies": {
     "coveralls": "^2.13.1",
+    "dotenv": "^4.0.0",
+    "ewd-document-store": "^1.18.0",
     "jasmine": "^2.8.0",
     "jasmine-spec-reporter": "^4.1.1",
     "jshint": "^2.9.5",
