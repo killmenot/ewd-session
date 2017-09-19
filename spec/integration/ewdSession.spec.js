@@ -5,8 +5,9 @@ require('dotenv').config();
 var sessions = require('../../');
 var Cache = require('cache').Cache;
 var DocumentStore = require('ewd-document-store');
+var qoper8 = require('ewd-qoper8');
 
-describe(' - integration/ewd-session: ', function () {
+describe('integration/ewd-session: ', function () {
   var db;
   var documentStore;
 
@@ -14,12 +15,18 @@ describe(' - integration/ewd-session: ', function () {
     db = new Cache();
     documentStore = new DocumentStore(db);
 
+    // save current working directory
+    var cwd = process.cwd();
+
     db.open({
       path: process.env.CACHE_MGR_PATH || '/opt/cache/mgr',
       username: process.env.CACHE_USERNAME || '_SYSTEM',
       password: process.env.CACHE_PASSWORD || 'SYS',
       namespace: process.env.CACHE_NAMESPACE || 'USER'
     });
+
+    // reset working directory
+    process.chdir(cwd);
 
     sessions.init(documentStore);
   });
@@ -122,6 +129,61 @@ describe(' - integration/ewd-session: ', function () {
 
       expect(results.error).toBeUndefined();
       expect(results.session).toBeDefined();
+      expect(results.payload).toEqual(
+        jasmine.objectContaining({
+          iss: 'qewd:testApp20',
+          foo: 'bar',
+          bar: 'baz'
+        })
+      );
+    });
+
+    it('should be able to createJwt payload and authenticate by jwt token', function () {
+      var application = 'testApp21';
+      var session = sessions.create(application);
+      var payload = {
+        foo: 'bar'
+      };
+
+      var jwtToken = session.createJWT(payload);
+
+      var results = sessions.authenticateByJWT(jwtToken, 'noCheck');
+
+      expect(results.error).toBeUndefined();
+      expect(results.session).toBeDefined();
+      expect(results.payload).toEqual(
+        jasmine.objectContaining({
+          iss: 'qewd:testApp21',
+          foo: 'bar'
+        })
+      );
+    });
+
+    it('should be able to updateJwt payload and authenticate by jwt token', function () {
+      var application = 'testApp22';
+      var session = sessions.create(application);
+
+      var payload = {
+        foo: 'bar'
+      };
+      session.createJWT(payload);
+
+      var newPayload = {
+        bar: 'baz'
+      };
+      session.updateJWT(newPayload);
+
+      var results = sessions.authenticateByJWT(session.jwt, 'noCheck');
+
+      expect(results.error).toBeUndefined();
+      expect(results.session).toBeDefined();
+      expect(results.payload).toEqual(
+        jasmine.objectContaining({
+          iss: 'qewd:testApp22',
+          foo: 'bar',
+          bar: 'baz'
+        })
+      );
     });
   });
 
@@ -312,6 +374,72 @@ describe(' - integration/ewd-session: ', function () {
       var actual = sessions.byToken(session.token);
 
       expect(actual.id).toBe(session.id);
+    });
+  });
+
+  it('should be able to manage allowed serivices', function () {
+    var application = 'testApp70';
+    var session = sessions.create(application);
+
+    session.allowService('service1');
+    session.disallowService('service2');
+
+    var actual = sessions.byToken(session.token);
+
+    expect(actual.allowedServices).toEqual({
+      service1: true,
+      service2: false
+    });
+  });
+
+  it('should be able to set/get ipAddress', function () {
+    var application = 'testApp80';
+    var session = sessions.create(application);
+
+    session.ipAddress = '127.0.0.1';
+
+    var actual = sessions.byToken(session.token);
+
+    expect(actual.ipAddress).toBe('127.0.0.1');
+  });
+
+  describe('#garbageCollector', function () {
+    beforeEach(function () {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 30000;
+    });
+
+    afterEach(function () {
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000;
+    });
+
+    it('should clear expired sessions', function (done) {
+      var q = new qoper8.masterProcess();
+      var application = 'testApp90';
+
+      sessions.create(application);
+
+      var session2 = sessions.create(application);
+      session2.expiryTime = new Date(2017, 0, 1).getTime() / 1000;
+
+      q.on('start', function () {
+        this.worker.loaderFilePath = process.cwd() +  '/node_modules/ewd-qoper8-worker.js';
+        this.worker.module = process.cwd() +  '/spec/integration/fixtures/workerModule';
+        this.exitOnStop = false;
+      });
+
+      q.on('started', function () {
+        q.startWorker();
+      });
+
+      q.on('stop', function () {
+        done();
+      });
+
+      q.start();
+
+      setTimeout(function () {
+        q.stop();
+      }, 8000);
     });
   });
 });

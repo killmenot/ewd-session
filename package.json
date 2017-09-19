@@ -43,6 +43,8 @@
     "coveralls": "^2.13.1",
     "dotenv": "^4.0.0",
     "ewd-document-store": "^1.18.0",
+    "ewd-qoper8": "^3.16.0",
+    "ewd-qoper8-cache": "^2.2.1",
     "jasmine": "^2.8.0",
     "jasmine-spec-reporter": "^4.1.1",
     "jshint": "^2.9.5",
