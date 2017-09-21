@@ -1,6 +1,6 @@
 # ewd-session: Session Management based on ewd-document-store DocumentNodes
 
-[![Build Status](https://travis-ci.org/killmenot/ewd-session.svg?branch=master)](https://travis-ci.org/killmenot/ewd-session) [![Coverage Status](https://coveralls.io/repos/github/killmenot/ewd-session/badge.svg?branch=tests)](https://coveralls.io/github/killmenot/ewd-session?branch=tests)
+[![Build Status](https://travis-ci.org/robtweed/ewd-session.svg?branch=master)](https://travis-ci.org/robtweed/ewd-session) [![Coverage Status](https://coveralls.io/repos/github/robtweed/ewd-session/badge.svg?branch=master)](https://coveralls.io/github/robtweed/ewd-session?branch=master)
 
 Rob Tweed <rtweed@mgateway.com>  
 24 February 2016, M/Gateway Developments Ltd [http://www.mgateway.com](http://www.mgateway.com)  
@@ -57,7 +57,6 @@ This provides you with the following constructors and methods:
 - __garbageCollector__:   timer for use within a ewd-qoper8 worker process, for garbage-collecting expired Sessions
 - __uuid__:               method for generating a UUID
 - __symbolTable__         specialist method: creates methods for maintaining the connected MUMPS process's symbol table (aka local variables)
-
 
 ### Initialising ewd-sessions
 
@@ -122,7 +121,6 @@ Normally you'll send the Session token value (_session.token_) back to the clien
 
 - __delete()__  deletes the Session and its associated Token object.  Normally you can let sessions just expire naturally, so use of this method is usually unnecessary.
 
-
 ### Accessing an Existing Session using a Token
 
 You'll normally send a Session token as part of a message to your worker module.  In the case of Express HTTP requests, the token will normally be conveyed as the Authorization header value.  In WebSocket messages, you can allocate an appropriate message property to hold it.
@@ -157,12 +155,21 @@ In such a situation, add true as a third argument:
 var results = sessions.authenticate(token, true);
 ```
 
+
 ## Examples
 
 You'll find two examples in the /examples path of this module repository:
 
-- cache-standalone.js: stanadlone example using Cache that can be run as a script file
-- cache-express.js:    Example using Express, ewd-qoper8 and Cache.  It will load cache-module1.js as the worker module. This allows you to invoke a GET request: `/qoper8/initiate` which starts a Session and returns a token.  You can then login using a POST request of `/qoper8/login` with a payload: {"username": "rob", "password": "secret"}  
+- cache-standalone.js: Standalone example using Cache that can be run as a script file
+- cache-express.js:    Example using Express, ewd-qoper8 and Cache. It will load cache-module1.js as the worker module. This allows you to invoke a GET request: `/qoper8/initiate` which starts a Session and returns a token.  You can then login using a POST request of `/qoper8/login` with a payload: `{"username": "rob", "password": "secret"}`
+
+
+## Integration tests
+
+  * You must have [InterSystem Caché](http://www.intersystems.com/our-products/cache/cache-overview/) installed.
+  * You must have `cache.node` in npm global registy. Read [Installation](http://docs.intersystems.com/latest/csp/docbook/DocBook.UI.Page.cls?KEY=BXJS_intro#BXJS_intro_install) to get more details.
+  * Run `npm link cache.node` before running integration tests.
+  * You may need to run this as sudo because of permissions.
 
 
 ## License
