@@ -28,4 +28,4 @@
 
 'use strict';
 
-module.exports = require('./lib/session');
+module.exports = require('./lib/ewdSession');

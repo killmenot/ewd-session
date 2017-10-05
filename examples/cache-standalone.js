@@ -26,14 +26,18 @@
 
 */
 
-var DocumentStore = require('ewd-qoper8-cache/node_modules/ewd-document-store');
-var interface = require('cache');
+// Start using:
+// $ node examples/cache-standalone.js
+// You may need to run this as sudo due to Cache permissions
+
+var DocumentStore = require('ewd-document-store');
+var Cache = require('cache').Cache;
 var sessions = require('ewd-session');
-var db = new interface.Cache();
+var db = new Cache();
+
 console.log('db: ' + JSON.stringify(db));
 
 // Change these parameters to match your Cache system:
-
 var ok = db.open({
   path: '/opt/cache/mgr',
   username: '_SYSTEM',
@@ -45,23 +49,23 @@ console.log('ok: ' + JSON.stringify(ok));
 
 var documentStore = new DocumentStore(db);
 
-documentStore.on('beforeSet', function(obj) {
+documentStore.on('beforeSet', function (obj) {
   console.log('beforeSet: ' + JSON.stringify(obj));
 });
 
-documentStore.on('afterSet', function(obj) {
+documentStore.on('afterSet', function (obj) {
   console.log('afterSet: ' + JSON.stringify(obj));
 });
 
-documentStore.on('beforeDelete', function(obj) {
+documentStore.on('beforeDelete', function (obj) {
   console.log('beforeDelete: ' + JSON.stringify(obj));
 });
 
-documentStore.on('afterDelete', function(obj) {
+documentStore.on('afterDelete', function (obj) {
   console.log('afterDelete: ' + JSON.stringify(obj));
 });
 
-console.log(documentStore.db.version());
+console.log('version: ' + documentStore.db.version());
 
 sessions.addTo(documentStore);
 
@@ -69,13 +73,10 @@ var session = sessions.create('testApp');
 console.log('id = ' + session.id);
 console.log('token: ' + session.token);
 
-
 var results = sessions.authenticate(session.token, 'noCheck');
 console.log('results: ' + JSON.stringify(results));
 console.log('token for session : ' + results.session.id + ': ' + results.session.token);
 console.log('application : ' + results.session.application);
 console.log('session data: ' + JSON.stringify(results.session.data.getDocument()));
-
-
 
 db.close();

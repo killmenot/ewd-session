@@ -26,6 +26,10 @@
 
 */
 
+// Start using:
+// $ node examples/cache-express.js
+// You may need to run this as sudo due to Cache permissions
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var qoper8 = require('ewd-qoper8');
@@ -38,7 +42,7 @@ app.get('/qoper8/initiate', function (req, res) {
   var message = {
     type: 'initiate'
   };
-  q.handleMessage(message, function(response) {
+  q.handleMessage(message, function (response) {
     res.send(response.message);
   });
 });
@@ -49,22 +53,24 @@ app.post('/qoper8/login', function (req, res) {
     token: req.headers.authorization,
     credentials: req.body
   };
-  q.handleMessage(message, function(response) {
+  q.handleMessage(message, function (response) {
     if (response.message.error) {
       var status = 400;
-      if (response.message.status && response.message.status.code) status = response.message.status.code;
-      res.status(status).send({error: response.message.error});
-    }
-    else {
+      if (response.message.status && response.message.status.code) {
+        status = response.message.status.code;
+      }
+      res.status(status).send({
+        error: response.message.error
+      });
+    } else {
       res.send(response.message);
     }
   });
 });
 
-q.on('started', function() {
+q.on('started', function () {
   this.worker.module = 'ewd-session/examples/cache-module1';
   app.listen(8080);
 });
 
 q.start();
-
